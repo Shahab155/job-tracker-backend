@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-uv
-openai-agents
-python-dotenv
-pgvector
-pydantic
-pymysql

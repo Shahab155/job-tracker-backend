@@ -16,6 +16,7 @@ class JobCreate(BaseModel):
     status:          Optional[str] = "Saved"
     notes:           Optional[str] = ""
     applied_date:    Optional[date] = None
+    platform:        Optional[str] = ""
 
 # Input validation model for updating a job application
 # All fields are optional to allow partial updates (PATCH-like behavior)
@@ -27,6 +28,7 @@ class JobUpdate(BaseModel):
     status:          Optional[str] = None
     notes:           Optional[str] = None
     applied_date:    Optional[date] = None
+    platform:        Optional[str] = None
 
 @router.get("/")
 async def list_jobs(user_id: int = Depends(get_current_user), conn=Depends(get_conn)):
@@ -52,12 +54,12 @@ async def create_job(
     row = await conn.fetchrow(
         """
         INSERT INTO jobs
-            (user_id, company, role, job_url, job_description, status, notes, applied_date)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+            (user_id, company, role, job_url, job_description, status, notes, applied_date, platform)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
         RETURNING *
         """,
         user_id, body.company, body.role, body.job_url,
-        body.job_description, body.status, body.notes, body.applied_date,
+        body.job_description, body.status, body.notes, body.applied_date, body.platform,
     )
 
     # Log the initial status into history
