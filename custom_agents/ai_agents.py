@@ -1,5 +1,5 @@
 import os
-from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletions
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
 from dotenv import load_dotenv
 
 # Load key variables from .env file
@@ -17,10 +17,10 @@ external_client = AsyncOpenAI(
     base_url=OPENROUTER_URL,
 )
 
-# Instantiate the OpenAIChatCompletionsOPENROUTER_MODEL utilizing the proxy client
-OPENROUTER_MODEL = OpenAIChatCompletionsOPENROUTER_MODEL (
+# Instantiate theOpenAIChatCompletionsModel utilizing the proxy client
+model = OpenAIChatCompletionsModel(
     openai_client=external_client,
-    OPENROUTER_MODEL=OPENROUTER_MODEL
+    model=OPENROUTER_MODEL
 )
 
 
@@ -70,19 +70,19 @@ For follow-up messages like sample answers or extra questions, respond in plain 
 resume_scorer_agent = Agent(
     name="Resume Scorer",
     instructions=SCORER_INSTRUCTIONS,
-    OPENROUTER_MODEL=OPENROUTER_MODEL,
+    model=model,
 )
 
 cover_letter_agent = Agent(
     name="Cover Letter Generator",
     instructions=COVER_LETTER_INSTRUCTIONS,
-    OPENROUTER_MODEL=OPENROUTER_MODEL,
+    model=model,
 )
 
 interview_prep_agent = Agent(
     name="Interview Prep",
     instructions=INTERVIEW_PREP_INSTRUCTIONS,
-    OPENROUTER_MODEL=OPENROUTER_MODEL,
+    model=model,
 )
 
 # Registry map to look up instances by string key
