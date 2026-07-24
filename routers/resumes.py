@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
 from typing import Optional
+import os
 from db.database import get_conn
 from db.auth_dep import get_current_user
+from utils.document_parser import parse_resume_file
 
 router = APIRouter()
 
@@ -33,6 +35,70 @@ async def list_resumes(
         user_id
     )
     return [dict(r) for r in rows]
+
+
+@router.post("/parse-file")
+async def parse_file(
+    file: UploadFile = File(...),
+    user_id: int = Depends(get_current_user)
+):
+    """
+    Upload a resume file (.pdf, .docx, .txt), parse its text content,
+    and return the parsed text for previewing/editing.
+    """
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Uploaded file must have a valid filename")
+    
+    file_bytes = await file.read()
+    if not file_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty")
+    
+    try:
+        parsed_text = parse_resume_file(file_bytes, file.filename)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err))
+    
+    # Generate default profile title from clean filename (remove extension)
+    base_name = os.path.splitext(file.filename)[0].replace("_", " ").replace("-", " ").title()
+
+    return {
+        "filename": file.filename,
+        "suggested_name": base_name,
+        "parsed_content": parsed_text
+    }
+
+
+@router.post("/upload")
+async def upload_and_create_resume(
+    file: UploadFile = File(...),
+    name: Optional[str] = Form(None),
+    user_id: int = Depends(get_current_user),
+    conn=Depends(get_conn)
+):
+    """
+    Upload a resume file (.pdf, .docx, .txt), parse text content,
+    and immediately save it as a new resume in the database.
+    """
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Uploaded file must have a valid filename")
+
+    file_bytes = await file.read()
+    if not file_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty")
+
+    try:
+        parsed_text = parse_resume_file(file_bytes, file.filename)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+    resume_name = name.strip() if name and name.strip() else os.path.splitext(file.filename)[0].replace("_", " ").replace("-", " ").title()
+
+    row = await conn.fetchrow(
+        "INSERT INTO resumes (user_id, name, content) VALUES ($1, $2, $3) RETURNING *",
+        user_id, resume_name, parsed_text
+    )
+    return dict(row)
+
 
 
 @router.get("/{resume_id}")
