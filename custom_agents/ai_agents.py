@@ -8,19 +8,19 @@ load_dotenv()
 # Disable agents runtime telemetry/logging to external services (if configured)
 
 
-OPENROUTER_API_KEY = os.getenv("GEMINI_API_KEY")
-OPENROUTER_MODEL   = os.getenv("MODEL")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+MODEL   = os.getenv("MODEL")
 
 # Create an asynchronous OpenAI client pointed at OpenRouter's proxy URL
 external_client = AsyncOpenAI(
-    api_key=OPENROUTER_API_KEY,
+    api_key=GEMINI_API_KEY,
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
 )
 
 # Instantiate the OpenAIChatCompletionsModel utilizing the proxy client
 model = OpenAIChatCompletionsModel (
     openai_client=external_client,
-    model=OPENROUTER_MODEL
+    model=MODEL
 )
 
 
