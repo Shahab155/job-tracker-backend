@@ -1,5 +1,5 @@
 import os
-from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsOPENROUTER_MODEL
 from dotenv import load_dotenv
 
 # Load key variables from .env file
@@ -8,19 +8,19 @@ load_dotenv()
 # Disable agents runtime telemetry/logging to external services (if configured)
 
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-MODEL   = os.getenv("MODEL")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_MODEL   = os.getenv("OPENROUTER_MODEL")
 
 # Create an asynchronous OpenAI client pointed at OpenRouter's proxy URL
 external_client = AsyncOpenAI(
-    api_key=GEMINI_API_KEY,
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    api_key=OPENROUTER_API_KEY,
+    base_url=OPENROUTER_URL,
 )
 
-# Instantiate the OpenAIChatCompletionsModel utilizing the proxy client
-model = OpenAIChatCompletionsModel (
+# Instantiate the OpenAIChatCompletionsOPENROUTER_MODEL utilizing the proxy client
+OPENROUTER_MODEL = OpenAIChatCompletionsOPENROUTER_MODEL (
     openai_client=external_client,
-    model=MODEL
+    OPENROUTER_MODEL=OPENROUTER_MODEL
 )
 
 
@@ -70,19 +70,19 @@ For follow-up messages like sample answers or extra questions, respond in plain 
 resume_scorer_agent = Agent(
     name="Resume Scorer",
     instructions=SCORER_INSTRUCTIONS,
-    model=model,
+    OPENROUTER_MODEL=OPENROUTER_MODEL,
 )
 
 cover_letter_agent = Agent(
     name="Cover Letter Generator",
     instructions=COVER_LETTER_INSTRUCTIONS,
-    model=model,
+    OPENROUTER_MODEL=OPENROUTER_MODEL,
 )
 
 interview_prep_agent = Agent(
     name="Interview Prep",
     instructions=INTERVIEW_PREP_INSTRUCTIONS,
-    model=model,
+    OPENROUTER_MODEL=OPENROUTER_MODEL,
 )
 
 # Registry map to look up instances by string key
