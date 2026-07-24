@@ -1,5 +1,5 @@
 import os
-from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsOPENROUTER_MODEL
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletions
 from dotenv import load_dotenv
 
 # Load key variables from .env file
