@@ -10,6 +10,7 @@ load_dotenv()
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_MODEL   = os.getenv("OPENROUTER_MODEL")
+OPENROUTER_URL = os.getenv("OPENROUTER_URL")
 
 # Create an asynchronous OpenAI client pointed at OpenRouter's proxy URL
 external_client = AsyncOpenAI(
